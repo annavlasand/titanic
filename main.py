@@ -9,3 +9,8 @@ titanic_data.isnull().sum() #определяем, сколько пропуще
 
 X = titanic_data.drop(['PassengerId', 'Survived', 'Name', 'Ticket', 'Cabin'], axis=1)
 y = titanic_data.Survived
+
+X = pd.get_dummies(X)
+
+clf = tree.DecisionTreeClassifier()
+clf.fit(X, y)
