@@ -11,6 +11,12 @@ X = titanic_data.drop(['PassengerId', 'Survived', 'Name', 'Ticket', 'Cabin'], ax
 y = titanic_data.Survived
 
 X = pd.get_dummies(X)
+X.Age.median()
+X = X.fillna({'Age': X.Age.median()})
 
 clf = tree.DecisionTreeClassifier()
 clf.fit(X, y)
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_test, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+clf.score(X, y)
