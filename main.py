@@ -3,11 +3,12 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn import tree
+from sklearn.model_selection import cross_val_score
 
 titanic_data = pd.read_csv('titanic.csv', encoding='windows-1251', sep=',')
 titanic_data.isnull().sum() #определяем, сколько пропущено данных в переменных, возможно что-то стоит исключить
 
-X = titanic_data.drop(['PassengerId', 'Survived', 'Name', 'Ticket', 'Cabin'], axis=1)
+X = titanic_data.drop(['PassengerId', 'Survived', 'Name', 'Ticket', 'Cabin'], axis=1) #удаляем ненужные столбцы и тот, который будем предсказывать
 y = titanic_data.Survived
 
 X = pd.get_dummies(X)
@@ -21,7 +22,7 @@ from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 clf.score(X, y)
 
-#посмотрим, как влияет глубина выборки на точность предсказывания значений деревом решений
+#посмотрим, как влияет глубина выборки на точность предсказывания значений деревом решений - переобучили модель
 scores_data = pd.DataFrame()
 max_depth_values = range(1, 100)
 for max_depth in max_depth_values:
@@ -30,13 +31,19 @@ for max_depth in max_depth_values:
     train_score = clf.score(X_train, y_train)
     test_score = clf.score(X_test, y_test)
 
+    mean_cross_val_score = cross_val_score(clf, X_train, y_train, cv=5).mean()
+
     temp_score_data = pd.DataFrame({'max_depth': [max_depth],
                                     'train_score': [train_score],
-                                    'test_score': [test_score]})
+                                    'test_score': [test_score],
+                                    'cross_val_score': [mean_cross_val_score]})
 
     scores_data = pd.concat([scores_data, temp_score_data])
 
 scores_data_long = pd.melt(scores_data, id_vars=['max_depth'],
-                           value_vars=['train_score', 'test_score'],
+                           value_vars=['train_score', 'test_score', 'cross_val_score'],
                            var_name='set_type',
                            value_name='score')
+sns.lineplot(x='max_depth', y='score', hue='set_type', data=scores_data_long)
+
+
