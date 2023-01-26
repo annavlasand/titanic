@@ -64,10 +64,9 @@ y_pred = np.where(y_predicted_prob[:, 1] > 0.8, 1, 0)
 #строим ROC-кривую
 
 from sklearn.metrics import roc_curve, auc
-from sklearn.datasets import make_classification
 
 fpr, tpr, thresholds = roc_curve(y_test, y_predicted_prob[:, 1])
-roc_auc= auc(fpr, tpr)
+roc_auc = auc(fpr, tpr)
 plt.figure()
 plt.plot(fpr, tpr, label='ROC curve (area = %0.2f)' % roc_auc)
 plt.plot([0, 1], [0, 1], 'k--')
