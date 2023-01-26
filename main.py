@@ -44,6 +44,21 @@ scores_data_long = pd.melt(scores_data, id_vars=['max_depth'],
                            value_vars=['train_score', 'test_score', 'cross_val_score'],
                            var_name='set_type',
                            value_name='score')
-sns.lineplot(x='max_depth', y='score', hue='set_type', data=scores_data_long)
+
+from sklearn.model_selection import GridSearchCV
+clf = tree.DecisionTreeClassifier()
+parametrs = {'criterion': ['gini', 'entropy'], 'max_depth': range(1, 30)}
+grid_search_cv_clf = GridSearchCV(clf, parametrs, cv=5)
+grid_search_cv_clf.fit(X_train, y_train)
+grid_search_cv_clf.best_params_
+best_clf = grid_search_cv_clf.best_estimator_
+
+from sklearn.metrics import precision_score, recall_score
+y_pred = best_clf.predict(X_test)
+precision_score(y_test, y_pred)
+recall_score(y_test, y_pred)
+y_predicted_prob = best_clf.predict_proba(X_test)
+pd.Series(y_predicted_prob[:, 1]).hist()
+y_pred = np.where(y_predicted_prob[:, 1] > 0.8, 1, 0)
 
 
