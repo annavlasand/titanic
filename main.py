@@ -61,6 +61,6 @@ y_predicted_prob = best_clf.predict_proba(X_test)
 pd.Series(y_predicted_prob[:, 1]).hist()
 y_pred = np.where(y_predicted_prob[:, 1] > 0.8, 1, 0)
 
-#строим ROC кривую
+#строим ROC-кривую
 
 
